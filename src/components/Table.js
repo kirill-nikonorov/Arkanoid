@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import {Cells} from "./Cells";
 import {CELLS_HORIZONTAL_COUNT, CELLS_VERTICAL_COUNT} from "../constants/game";
 
+import {Platform} from './Platform'
+
 const TableContainer = styled.div`
         height: 100%;
         width:100%;
@@ -19,14 +21,12 @@ for (let x = 0; x < CELLS_HORIZONTAL_COUNT; x++) {
     }
 }
 
-
-console.log(tableBackgroundCells);
-
 export const Table = () => {
 
     return (
         <TableContainer>
             <Cells cells={tableBackgroundCells} oy/>
+            <Platform/>
         </TableContainer>
     )
 };
