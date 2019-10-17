@@ -1,0 +1,27 @@
+import React from "react";
+import {hot} from 'react-hot-loader';
+import {Game} from '../Game';
+import styled from "styled-components";
+
+const RootContainer = styled.div`
+        
+        height: 100vh;
+        background-color: #aaa;
+        display: flex;
+        
+        justify-content: center;
+        align-items: center;
+        
+        `;
+
+
+
+const Root = () => {
+    return (
+        <RootContainer>
+            <Game/>
+        </RootContainer>
+    )
+};
+
+export default hot(module)(Root)
