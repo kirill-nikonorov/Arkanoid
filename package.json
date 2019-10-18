@@ -2,6 +2,7 @@
   "name": "Arkanoid",
   "version": "1.0.0",
   "dependencies": {
+    "@avinlab/repeat": "^1.0.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-redux": "^7.1.1",

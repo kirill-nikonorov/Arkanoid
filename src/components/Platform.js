@@ -4,7 +4,7 @@ import {CELL_HEIGHT_PX, CELL_WEIGHT_PX, PLATFORM_WIDHT_CELLS_COUNT} from "../con
 
 import {connect} from 'react-redux';
 import {pushPlatformRight, pushPlatformLeft} from '../actions/platform'
-
+import createRepeat from '@avinlab/repeat';
 
 const PlatformContainer = styled.div.attrs(({coordinate}) => ({
     style: {
@@ -19,23 +19,61 @@ const PlatformContainer = styled.div.attrs(({coordinate}) => ({
         position: absolute;
         `;
 
+class PlatformView extends React.Component {
 
-const PlatformView = (props) => {
-    console.log(props);
-    const {dispatch, platformCoordinate} = props;
+    handleDirectionKeyPressDown = (direction) => {
+        const {pushPlatformRight, pushPlatformLeft} = this.props;
+
+        this.stopRepeater();
+
+        this.repeater = createRepeat({
+            action: () => {
+                if (direction === "right") pushPlatformRight();
+                if (direction === "left") pushPlatformLeft();
+            },
+            delay: 50
+        });
+
+        this.repeater.start();
+    };
 
 
-    return (
-        <PlatformContainer coordinate={platformCoordinate}>
-            <button onClick={() => {
-                dispatch(pushPlatformLeft())
-            }}>-
-            </button>
-            <button onClick={() => {
-                dispatch(pushPlatformRight())
-            }}>+
-            </button>
-        </PlatformContainer>
-    )
-};
-export const Platform = connect((state) => state)(PlatformView);
+    stopRepeater = () => {
+        if (this.repeater) {
+            this.repeater.stop();
+            this.repeater = null;
+        }
+    };
+
+    componentDidMount() {
+        const listener = new window.keypress.Listener();
+
+        listener.register_many([
+            {
+                "keys": "d",
+                "on_keydown": () => this.handleDirectionKeyPressDown("right"),
+                "on_keyup": this.stopRepeater,
+                "prevent_repeat": true
+            },
+            {
+                "keys": "a",
+                "on_keydown": () => this.handleDirectionKeyPressDown("left"),
+                "on_keyup": this.stopRepeater,
+                "prevent_repeat": true
+            }
+        ]);
+    }
+
+    render() {
+        const {platformCoordinate} = this.props;
+
+
+        return (
+            <PlatformContainer coordinate={platformCoordinate}>
+
+            </PlatformContainer>
+        )
+    }
+}
+
+export const Platform = connect((state) => state, {pushPlatformRight, pushPlatformLeft})(PlatformView);
