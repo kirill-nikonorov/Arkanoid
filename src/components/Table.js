@@ -1,35 +1,39 @@
 import React from "react";
 import styled from 'styled-components'
-import {createFigure} from "./CellsGroup";
+import {CellsGroup} from "./CellsGroup";
 import {CELLS_HORIZONTAL_COUNT, CELLS_VERTICAL_COUNT} from "../constants/game";
 
 import createRepeat from "@avinlab/repeat/dist/index.cjs";
 import {connect} from "react-redux";
 import {pushPlatformLeft, pushPlatformRight} from "../actions/platform";
 
-import {Cell, PlatformCell, BallCell} from "./styles";
+import {startNewGame, toggleGameOn} from '../actions/gameStatus'
 
 const TableContainer = styled.div`
         height: 100%;
-        width:100%;
+        width: 100%;
 
         position: relative;
         `;
 
 
-const tableBackgroundCells = [];
-for (let x = 0; x < CELLS_HORIZONTAL_COUNT; x++) {
-    for (let y = 0; y < CELLS_VERTICAL_COUNT; y++) {
-        tableBackgroundCells.push({x, y})
+const createFilledArray = (rowCount, columnCount, color) => {
+    const array = [];
+    for (let y = 0; y < rowCount; y++) {
+        for (let x = 0; x < columnCount; x++) {
+            const data = {x, y};
+            color && (data.color = color);
+            array.push(data)
+        }
     }
-}
-const TableBackGround = createFigure(Cell, tableBackgroundCells);
+    return array;
+};
 
-const platformMap = [{x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}]
-const Platform = createFigure(PlatformCell, platformMap);
+const tableBackgroundData = createFilledArray(CELLS_HORIZONTAL_COUNT, CELLS_VERTICAL_COUNT);
 
+const platformData = createFilledArray(1, 3, "green");
+const ballData = createFilledArray(1, 1, "red");
 
-const Ball = createFigure(BallCell, [{x: 0, y: 0}]);
 
 class TableView extends React.Component {
     handleDirectionKeyPressDown = (direction) => {
@@ -56,6 +60,8 @@ class TableView extends React.Component {
     };
 
     componentDidMount() {
+         const {startNewGame,toggleGameOn} = this.props;
+        // startNewGame();
         const listener = new window.keypress.Listener();
 
         listener.register_many([
@@ -70,23 +76,30 @@ class TableView extends React.Component {
                 "on_keydown": () => this.handleDirectionKeyPressDown("left"),
                 "on_keyup": this.stopRepeater,
                 "prevent_repeat": true
+            },
+            {
+                "keys": "space",
+                "on_keydown": () => toggleGameOn(),
+                "prevent_repeat": true
             }
         ]);
     }
 
     render() {
-        const {platformCoordinate} = this.props;
+        const {platformCoordinate, ball: {x: ballX, y: ballY}} = this.props;
+
         return (
             <TableContainer>
-                <TableBackGround/>
-                <Platform figureX={platformCoordinate} figureY={CELLS_VERTICAL_COUNT - 1}/>
-                <Ball figureX={platformCoordinate} figureY={platformCoordinate}/>
+                <CellsGroup cellsData={tableBackgroundData}/>
+                <CellsGroup cellsData={platformData} figureX={platformCoordinate} figureY={0}/>
+                <CellsGroup cellsData={ballData} figureX={ballX} figureY={ballY}/>
 
             </TableContainer>
         )
     }
-
 }
 
-export const Table = connect((state) => state, {pushPlatformRight, pushPlatformLeft})(TableView);
+export const Table = connect((state) => {
+    return state
+}, {pushPlatformRight, pushPlatformLeft, startNewGame, toggleGameOn})(TableView);
 

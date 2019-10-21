@@ -1,8 +1,10 @@
 import React from "react";
 import {render} from "react-dom";
 import Root from './components/Root/Root'
+import DevTools from './components/devTools/DevTools';
 
-import {createStore, applyMiddleware} from 'redux'
+
+import {createStore, applyMiddleware, compose} from 'redux'
 
 
 import {Provider} from 'react-redux';
@@ -12,7 +14,11 @@ import {rootReducer} from './reducers/rootReducer'
 import thunk from 'redux-thunk';
 
 
-const store = createStore(rootReducer, {platformCoordinate: 0}, applyMiddleware(thunk));
+const enhancer = compose(
+    applyMiddleware(thunk),
+    DevTools.instrument({maxAge: 30})
+);
+const store = createStore(rootReducer, {}, enhancer);
 
 render(
     <Provider store={store}>

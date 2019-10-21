@@ -1,15 +1,10 @@
-import {handleActions} from 'redux-actions';
-import {movePlatformLeft, movePlatformRight} from '../lib/redux-actions/table'
+import {combineReducers} from 'redux'
+import {ballReducer} from "./ballReducer";
+import {gameStatusReducer} from "./gameStatusReducer";
+import {platformCoordinateReducer} from "./platformCoordinateReducer";
 
-export const rootReducer = handleActions({
-        [movePlatformLeft]: (state) => {
-            const {platformCoordinate} = state;
-            return {...state, platformCoordinate: platformCoordinate - 1}
-        },
-        [movePlatformRight]: (state) => {
-            const {platformCoordinate} = state;
-            return {...state, platformCoordinate: platformCoordinate + 1}
-        },
-
-    },
-    {platformCoordinate: 0});
+export const rootReducer = combineReducers({
+    gameStatus: gameStatusReducer,
+    platformCoordinate: platformCoordinateReducer,
+    ball: ballReducer
+});

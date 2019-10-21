@@ -2,6 +2,7 @@ import React from "react";
 import {hot} from 'react-hot-loader';
 import {Game} from '../Game';
 import styled from "styled-components";
+import DevTools from '../devTools/DevTools';
 
 const RootContainer = styled.div`
         
@@ -15,11 +16,11 @@ const RootContainer = styled.div`
         `;
 
 
-
 const Root = () => {
     return (
         <RootContainer>
             <Game/>
+            <DevTools/>
         </RootContainer>
     )
 };
