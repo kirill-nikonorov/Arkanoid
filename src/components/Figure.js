@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {CELL_HEIGHT_PX, CELL_WEIGHT_PX} from "../constants/game";
 import {pure} from 'recompose';
 
-const CellsGroupContainer = styled.div.attrs(
+const FigureContainer = styled.div.attrs(
     ({figureX, figureY}) => ({
         style: {
             left: `${figureX * CELL_WEIGHT_PX}px`,
@@ -30,14 +30,14 @@ export const Cell = styled.div.attrs(
       `;
 
 
-export const CellsGroupView = ({cellsData, figureX = 0, figureY = 0}) => {
+export const FigureView = ({figureData, figureX = 0, figureY = 0}) => {
     return (
-        <CellsGroupContainer figureX={figureX} figureY={figureY}>
-            {cellsData.map(({x, y, color}) => {
+        <FigureContainer figureX={figureX} figureY={figureY}>
+            {figureData.map(({x, y, color}) => {
                 return <Cell x={x} y={y} color={color} key={`${x} + ${y}`}>{`${y} + ${x}`}</Cell>
             })}
-        </CellsGroupContainer>
+        </FigureContainer>
     )
 };
 
-export const CellsGroup = pure(CellsGroupView);
+export const Figure = pure(FigureView);

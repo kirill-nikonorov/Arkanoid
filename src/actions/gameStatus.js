@@ -7,14 +7,14 @@ import {checkIsGameOnPause, checkIsGameOn, checkIsTurnedOff} from '../utils/game
 import {turnOnGame, pauseGame} from '../lib/redux-actions/gameStatus'
 
 export const centredPlatformX = Math.round((CELLS_HORIZONTAL_COUNT - PLATFORM_WIDTH_CELLS_COUNT) / 2)
-export const centredBallX = Math.round((CELLS_HORIZONTAL_COUNT) / 2);
-export const ballOnPlatformY = 1;
+export const centredMissileX = Math.round((CELLS_HORIZONTAL_COUNT) / 2);
+export const missileOnPlatformY = 1;
 
 const initialState = {
-    platformCoordinate: centredPlatformX,
-    ball: {x: centredBallX, y: ballOnPlatformY},
-    gameStatus: GAME_STATUSES.GAME_IS_ON
-}
+        platformCoordinate: centredPlatformX,
+        missile: {x: centredMissileX, y: missileOnPlatformY},
+        gameStatus: GAME_STATUSES.GAME_IS_ON
+    }
 ;
 
 export const startNewGame = () => (dispatch) => {

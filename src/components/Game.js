@@ -4,8 +4,9 @@ import {Table} from "./Table";
 import {STEP_TIME_MILLISECONDS, TABLE_HEIGHT_PX, TABLE_WIDTH_PX} from "../constants/game";
 import {connect} from "react-redux";
 import {toggleGameOn} from "../actions/gameStatus";
-import {pushBall} from "../actions/ball";
+import {pushMissile} from "../actions/missile";
 import {checkIsGameOn} from "../utils/gameStatusCheckers";
+import {moveMissile} from "../lib/redux-actions/missile";
 
 const GameContainer = styled.div`
         height: ${TABLE_HEIGHT_PX}px;
@@ -19,13 +20,26 @@ const PauseButton = styled.button`
         top: -30px;
         `;
 
+const KikButton = styled.button`
+        position: absolute;
+        top: -30px;
+        left: 70px;
+        `;
+const AnglePanel = styled.div`
+        height: 25px;
+        width: 25px;
+        border: 1px solid black;
+        position: absolute;
+        bottom: -40px;
+        `;
+
 
 class GameView extends React.Component {
     setUpGameTimer = () => {
-        const {pushBall} = this.props;
+        const {pushMissile} = this.props;
 
         this.stepTimer = setInterval(() => {
-            pushBall()
+            pushMissile()
         }, STEP_TIME_MILLISECONDS);
     };
     cleanGameTimer = () => {
@@ -41,21 +55,23 @@ class GameView extends React.Component {
     }
 
     render() {
-        const {toggleGameOn} = this.props;
-        console.log(this.props);
+        const {toggleGameOn, movMissile, angle} = this.props;
 
         return (
             <GameContainer>
                 <PauseButton onClick={toggleGameOn}>Пауза</PauseButton>
+                <KikButton onClick={() => movMissile({x: 8.55, y: 4.55})}>Кинуть шар</KikButton>
                 <Table/>
+                <AnglePanel>{angle}</AnglePanel>
+
             </GameContainer>
         )
     }
 }
 
-const mapStateToProps = ({gameStatus}) => {
-    return {gameIsOn: checkIsGameOn(gameStatus)}
+const mapStateToProps = ({gameStatus, missile: {angle}}) => {
+    return {gameIsOn: checkIsGameOn(gameStatus), angle}
 
 };
-export const Game = connect(mapStateToProps, {pushBall, toggleGameOn})(GameView);
+export const Game = connect(mapStateToProps, { moveMissile,  pushMissile, toggleGameOn})(GameView);
 

@@ -1,10 +1,10 @@
 import {combineReducers} from 'redux'
-import {ballReducer} from "./ballReducer";
+import {missileReducer} from "./missileReducer";
 import {gameStatusReducer} from "./gameStatusReducer";
 import {platformCoordinateReducer} from "./platformCoordinateReducer";
 
 export const rootReducer = combineReducers({
     gameStatus: gameStatusReducer,
     platformCoordinate: platformCoordinateReducer,
-    ball: ballReducer
+    missile: missileReducer
 });
