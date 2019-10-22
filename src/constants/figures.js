@@ -7,11 +7,14 @@ import {
 const createFilledArray = (rowCount, columnCount, color) => {
     const array = [];
     for (let y = 0; y < rowCount; y++) {
+        const rowArray = []
         for (let x = 0; x < columnCount; x++) {
             const data = {x, y};
             color && (data.color = color);
+            rowArray.push(data)
             array.push(data)
         }
+
     }
     return array;
 };

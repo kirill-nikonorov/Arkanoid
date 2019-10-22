@@ -9,10 +9,31 @@ import {
     putAngleInOrder, toRoundCos, toRoundSin
 } from "../utils/trigonometricFunctions";
 
-const {min, abs} = Math;
+const {min, abs, floor, ceil} = Math;
+
+
+const findCoveredCells = (x, y) => {
+
+    const coveredCellsXCoords = [floor(x), ceil(x)];
+    const coveredCellsYCoords = [floor(y), ceil(y)];
+
+
+    const coveredCells = [];
+    coveredCellsXCoords.forEach((x) => {
+        coveredCellsYCoords.forEach(y => {
+            coveredCells.push({x, y})
+        })
+    });
+
+    return coveredCells;
+
+
+};
+
 
 export const pushMissile = () => (dispatch, getState) => {
-    const {x, y, angle} = getState().missile;
+    const state = getState();
+    const {missile: {x, y, angle}, target: {targetData, targetX, targetY}} = state;
 
     let newX = x,
         newY = y,
@@ -25,10 +46,32 @@ export const pushMissile = () => (dispatch, getState) => {
     };
 
 
+    const checkAreCellsAreBusy = (cells) => {
+
+        const {x, y} = cells[3];
+
+
+        targetData.forEach(({x: xTargetCell, y: yTargetCell}) => {
+            const xAbsoluteTargetCell = xTargetCell + targetX;
+            const yAbsoluteTargetCell = yTargetCell + targetX;
+
+            if (x === xAbsoluteTargetCell && y === yAbsoluteTargetCell) console.log(cells[3])
+
+
+        })
+
+
+    };
+
+
     const handlePossiblePieceOfStep = (stepLength, x, y, angle) => {
 
         const hypotheticalNewX = computeNewBallCoordinate(x, stepLength, toRoundCos(angle));
         const hypotheticalNewY = computeNewBallCoordinate(y, stepLength, toRoundSin(angle));
+
+        const coveredCells = findCoveredCells(hypotheticalNewX, hypotheticalNewY);
+        checkAreCellsAreBusy(coveredCells);
+
 
         if (checkIsWithinAllBounds(hypotheticalNewX, hypotheticalNewY)) {
 

@@ -22,8 +22,6 @@ const TableContainer = styled.div`
         `;
 
 
-
-
 class TableView extends React.Component {
     handleDirectionKeyPressDown = (direction) => {
         const {pushPlatformRight, pushPlatformLeft} = this.props;
@@ -50,7 +48,6 @@ class TableView extends React.Component {
 
     componentDidMount() {
         const {startNewGame, toggleGameOn, moveBall} = this.props;
-        // startNewGame();
         const listener = new window.keypress.Listener();
 
         listener.register_many([
@@ -83,7 +80,7 @@ class TableView extends React.Component {
             },
             {
                 "keys": "w",
-                "on_keydown": () => moveBall({x: 0.03000000000000025, y: 4.55, angle: 135}),
+                "on_keydown": () => moveBall({x: 1.3899999999999997, y: 5.97, angle: 45}),
                 "prevent_repeat": true
             },
             {
@@ -95,12 +92,12 @@ class TableView extends React.Component {
     }
 
     render() {
-        const {platformCoordinate, missile: {x: missileX, y: missileY}} = this.props;
+        const {platformCoordinate, missile: {x: missileX, y: missileY}, target: {targetData, targetX, targetY}} = this.props;
 
         return (
             <TableContainer>
                 <Figure figureData={tableBackgroundData}/>
-                <Figure figureData={targetData} figureX={centredTargetX} figureY={toppedTargetY}/>
+                <Figure figureData={targetData} figureX={targetX} figureY={targetY}/>
 
                 <Figure figureData={platformData} figureX={platformCoordinate} figureY={0}/>
                 <Figure figureData={missileData} figureX={missileX} figureY={missileY}/>
