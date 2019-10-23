@@ -10,9 +10,10 @@ import {pushPlatformLeft, pushPlatformRight} from "../actions/platform";
 import {startNewGame, toggleGameOn} from '../actions/gameStatus'
 import {moveMissile} from "../lib/redux-actions/missile";
 import {
-    centredTargetX, missileData, platformData, tableBackgroundData, targetData,
+    centredTargetX, missileCells, platformCells, tableBackgroundCells, targetCells,
     toppedTargetY
 } from "../constants/figures";
+import {findCoveredCellsData} from "../actions/missile";
 
 const TableContainer = styled.div`
         height: 100%;
@@ -92,15 +93,19 @@ class TableView extends React.Component {
     }
 
     render() {
-        const {platformCoordinate, missile: {x: missileX, y: missileY}, target: {targetData, targetX, targetY}} = this.props;
+        const {platformCoordinate, missile: {x: missileX, y: missileY}, target: {targetCells, targetX, targetY}} = this.props;
 
+        const {data: coveredCells, x: coveredX, y: coveredY} = findCoveredCellsData(missileX, missileY);
         return (
             <TableContainer>
-                <Figure figureData={tableBackgroundData}/>
-                <Figure figureData={targetData} figureX={targetX} figureY={targetY}/>
+                <Figure figureCells={tableBackgroundCells}/>
+                <Figure figureCells={targetCells} figureX={targetX} figureY={targetY} color={"black"}/>
 
-                <Figure figureData={platformData} figureX={platformCoordinate} figureY={0}/>
-                <Figure figureData={missileData} figureX={missileX} figureY={missileY}/>
+                <Figure figureCells={platformCells} figureX={platformCoordinate} figureY={0} color={"green"}/>
+
+                <Figure figureCells={coveredCells} figureX={coveredX} figureY={coveredY} color={"white"}/>
+
+                <Figure figureCells={missileCells} figureX={missileX} figureY={missileY} color={"red"}/>
             </TableContainer>
         )
     }

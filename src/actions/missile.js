@@ -12,28 +12,76 @@ import {
 const {min, abs, floor, ceil} = Math;
 
 
-const findCoveredCells = (x, y) => {
+const findEdges = (i) => {
+    const floored = floor(i);
 
-    const coveredCellsXCoords = [floor(x), ceil(x)];
-    const coveredCellsYCoords = [floor(y), ceil(y)];
-
-
-    const coveredCells = [];
-    coveredCellsXCoords.forEach((x) => {
-        coveredCellsYCoords.forEach(y => {
-            coveredCells.push({x, y})
-        })
-    });
-
-    return coveredCells;
-
+    if (i === floored) return [i];
+    return [floored, ceil(i)]
 
 };
 
+export const findCoveredCellsData = (x, y) => {
+
+    const coveredCellsXCoords = findEdges(x);
+    const coveredCellsYCoords = findEdges(y);
+
+
+    const coveredCells = [];
+    coveredCellsXCoords.forEach(() => {
+        const rowArr = [];
+        coveredCellsYCoords.forEach(() => {
+            rowArr.push("x")
+        });
+        coveredCells.push(rowArr)
+    });
+
+    return {data: coveredCells, x: floor(x), y: floor(y)};
+};
+
+const findLeftFilledCellIndex = figure => {
+    const fieldWidth = figure[0].length;
+    const leftIndex = figure.reduce((leftFilledCellIndex, row) => {
+        const columnLeftFilledIndex = row.findIndex(cell => !!cell);
+        return columnLeftFilledIndex >= 0
+            ? Math.min(columnLeftFilledIndex, leftFilledCellIndex)
+            : leftFilledCellIndex;
+    }, fieldWidth);
+    return leftIndex === fieldWidth ? -1 : leftIndex;
+};
+const findRightFilledCellIndex = figure => {
+
+    const rowLength = figure.length;
+    return figure.reduce((rightFilledCellIndex, row) => {
+        const reversedRow = row.slice().reverse();
+
+        const columnRightFilledCellIndex = rowLength - reversedRow.findIndex(cell => !!cell);
+        return columnRightFilledCellIndex >= 0
+            ? Math.max(columnRightFilledCellIndex, rightFilledCellIndex)
+            : rightFilledCellIndex;
+    }, -1);
+};
+
+
+const findEdgedFilledCellsIndexes = figure => {
+
+    const reversedF = figure.slice().reverse();
+    return ({
+        bottomIndex: figure.findIndex(row => row.some(cell => !!cell)),
+        topIndex: figure.length - reversedF.findIndex(row => row.some(cell => !!cell)) - 1,
+        rightIndex: findRightFilledCellIndex(figure) - 1,
+        leftIndex: findLeftFilledCellIndex(figure)
+
+    })
+};
+
+const conventToTableSartingPoint = ({
+                                        topIndex, bottomIndex, rightIndex, leftIndex
+                                    }, x, y) =>
+    ({topIndex: y + topIndex, bottomIndex: y + bottomIndex, rightIndex: x + rightIndex, leftIndex: x + leftIndex});
 
 export const pushMissile = () => (dispatch, getState) => {
     const state = getState();
-    const {missile: {x, y, angle}, target: {targetData, targetX, targetY}} = state;
+    const {missile: {x, y, angle}, target: {targetCells, targetX, targetY}} = state;
 
     let newX = x,
         newY = y,
@@ -45,20 +93,44 @@ export const pushMissile = () => (dispatch, getState) => {
         newAngle = angle;
     };
 
+    const checkAreCellsAreBusy = ({data}) => {
 
-    const checkAreCellsAreBusy = (cells) => {
-
-        const {x, y} = cells[3];
-
-
-        targetData.forEach(({x: xTargetCell, y: yTargetCell}) => {
-            const xAbsoluteTargetCell = xTargetCell + targetX;
-            const yAbsoluteTargetCell = yTargetCell + targetX;
-
-            if (x === xAbsoluteTargetCell && y === yAbsoluteTargetCell) console.log(cells[3])
+        const targetEdgesFroTargetSartingPoint = findEdgedFilledCellsIndexes(targetCells);
+        const targetEdgesFroTableSartingPoint = conventToTableSartingPoint(targetEdgesFroTargetSartingPoint, targetX, targetY)
 
 
-        })
+        console.log(targetEdgesFroTableSartingPoint)
+        /*
+
+                const results = []
+
+
+                cells.forEach(({x, y}) => {
+
+                    const xTargetCell = x - targetX;
+                    const yTargetCell = y - targetY;
+
+                    const areOnTheSameLevel = xTargetCell > 0 && yTargetCell > 0;
+
+                    if (!areOnTheSameLevel) return;
+
+                    console.log("areOnTheSameLevel")
+
+                    const isCellBusy = targetCells[yTargetCell][xTargetCell];
+
+
+                    results.push({x, y, haveConflict, isCellBusy})
+
+
+                    /!*const yAbsoluteTargetCell = yTargetCell + targetX;
+
+                    if (x === xAbsoluteTargetCell && y === yAbsoluteTargetCell) console.log(cells[3])*!/
+
+
+                });
+
+                console.log(results);
+        */
 
 
     };
@@ -68,11 +140,11 @@ export const pushMissile = () => (dispatch, getState) => {
 
         const hypotheticalNewX = computeNewBallCoordinate(x, stepLength, toRoundCos(angle));
         const hypotheticalNewY = computeNewBallCoordinate(y, stepLength, toRoundSin(angle));
+//
+        const coveredCellsData = findCoveredCellsData(hypotheticalNewX, hypotheticalNewY);
+        checkAreCellsAreBusy(coveredCellsData);
 
-        const coveredCells = findCoveredCells(hypotheticalNewX, hypotheticalNewY);
-        checkAreCellsAreBusy(coveredCells);
-
-
+//
         if (checkIsWithinAllBounds(hypotheticalNewX, hypotheticalNewY)) {
 
             const [xChange, yChange] = findCathetuses(stepLength, angle);

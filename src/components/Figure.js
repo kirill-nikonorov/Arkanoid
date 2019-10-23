@@ -30,14 +30,17 @@ export const Cell = styled.div.attrs(
       `;
 
 
-export const FigureView = ({figureData, figureX = 0, figureY = 0}) => {
+export const FigureView = ({figureCells, figureX = 0, figureY = 0, color}) => {
     return (
         <FigureContainer figureX={figureX} figureY={figureY}>
-            {figureData.map(({x, y, color}) => {
-                return <Cell x={x} y={y} color={color} key={`${x} + ${y}`}>{`${y} + ${x}`}</Cell>
+            {figureCells.map((row, rowIndex) => {
+                return row.map((cell, cellIndex) => {
+                    return <Cell x={cellIndex} y={rowIndex} color={color}
+                                 key={`${cellIndex} + ${rowIndex}`}>{`${rowIndex} + ${cellIndex}`}</Cell>
+                })
             })}
         </FigureContainer>
     )
 };
 
-export const Figure = pure(FigureView);
+export const Figure = pure(FigureView)
